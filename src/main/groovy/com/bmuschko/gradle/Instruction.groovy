@@ -1,8 +1,9 @@
 package com.bmuschko.gradle
 
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
 
 interface Instruction {
-    String getKeyword()
-    @Input String build()
+    @Internal String getKeyword()
+    @Input String getBuild()
 }

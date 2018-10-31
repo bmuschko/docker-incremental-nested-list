@@ -11,7 +11,7 @@ class FromInstruction implements Instruction {
         'FROM'
     }
 
-    String build() {
+    String getBuild() {
         "$keyword $baseImage".toString()
     }
 }

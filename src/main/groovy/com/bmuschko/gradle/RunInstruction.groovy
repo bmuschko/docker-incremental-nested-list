@@ -11,7 +11,7 @@ class RunInstruction implements Instruction {
         'RUN'
     }
 
-    String build() {
+    String getBuild() {
         "$keyword $command".toString()
     }
 }

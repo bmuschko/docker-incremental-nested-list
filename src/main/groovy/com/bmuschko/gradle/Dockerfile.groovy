@@ -1,32 +1,42 @@
 package com.bmuschko.gradle
 
 import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.OutputFile
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.Nested
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 
 class Dockerfile extends DefaultTask {
     @Nested
-    List<Instruction> instructions = new ArrayList<Instruction>()
+    final ListProperty<Instruction> instructions
 
     @OutputFile
-    File destFile = project.file("$project.buildDir/docker/Dockerfile")
+    @PathSensitive(PathSensitivity.RELATIVE)
+    final RegularFileProperty destFile
+
+    Dockerfile() {
+        instructions = project.objects.listProperty(Instruction)
+        destFile = project.objects.fileProperty()
+        destFile.set(project.layout.buildDirectory.file('docker/Dockerfile'))
+    }
     
     @TaskAction
     void create() {
-        getDestFile().withWriter { out ->
-            getInstructions().each { instruction ->
-                out.println instruction.build()
+        destFile.get().asFile.withWriter { out ->
+            instructions.get().forEach() { instruction ->
+                out.println instruction.getBuild()
             }
         }
     }
     
     void from(String baseImage) {
-        instructions << new FromInstruction(baseImage)
+        instructions.add(new FromInstruction(baseImage))
     }
     
     void run(String command) {
-        instructions << new RunInstruction(command)
+        instructions.add(new RunInstruction(command))
     }
 }
